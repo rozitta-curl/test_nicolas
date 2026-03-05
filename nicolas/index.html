@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adopt Don't Stop — Стань Миколайчиком для хвостиків</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="animals-data.js"></script>
+<style>
+  :root {
+    --navy: #0d1b4b;
+    --navy-light: #132260;
+    --yellow: #f5c518;
+    --yellow-dark: #e6b800;
+    --orange: #ff6b35;
+    --white: #ffffff;
+    --card-bg: rgba(255,255,255,0.07);
+    --card-border: rgba(255,255,255,0.12);
+    --teal: #3dbfb8;
+    --red: #e84040;
+    --blue-light: #a8d4f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ===== STARS BACKGROUND ===== */
+  .stars-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  .star.gold { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+  .star.blue { background: var(--blue-light); box-shadow: 0 0 6px var(--blue-light); }
+  .star.white-s { background: white; box-shadow: 0 0 4px white; }
+  @keyframes twinkle {
+    0%,100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.3); }
+  }
+
+  /* Hanging decorations */
+  .hanging {
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+  }
+  .hanging-line {
+    width: 1px;
+    background: rgba(255,255,255,0.3);
+  }
+  .hanging-star { font-size: 22px; }
+  .hanging-circle {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+  }
+
+  /* Snow at bottom */
+  .snow-bottom {
+    position: fixed;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 80px;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+  .snow-bottom svg { width: 100%; height: 100%; }
+
+  /* ===== PAGES ===== */
+  .page { display: none; position: relative; z-index: 2; min-height: 100vh; padding-bottom: 100px; }
+  .page.active { display: block; }
+
+  /* ===== NAV ===== */
+  nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 40px;
+    position: relative;
+    z-index: 10;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: white;
+    text-transform: uppercase;
+  }
+  .logo-paw { color: var(--orange); font-size: 18px; }
+
+  /* ===== HERO ===== */
+  .hero {
+    text-align: center;
+    padding: 20px 20px 40px;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    color: var(--yellow);
+    line-height: 1.2;
+    margin-bottom: 16px;
+    text-shadow: 0 0 40px rgba(245,197,24,0.4);
+  }
+  .hero p {
+    font-size: 16px;
+    color: rgba(255,255,255,0.85);
+    max-width: 520px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+
+  .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--yellow);
+    color: #1a1a1a;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(245,197,24,0.4);
+  }
+  .btn-primary:hover { background: var(--yellow-dark); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(245,197,24,0.5); }
+
+  .btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: white; background: rgba(255,255,255,0.1); }
+
+  /* ===== HOW IT WORKS ===== */
+  .how-box {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(245,197,24,0.4);
+    border-radius: 20px;
+    padding: 28px;
+    max-width: 700px;
+    margin: 0 auto 48px;
+    text-align: center;
+  }
+  .how-box h3 {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 24px;
+  }
+  .how-steps {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .how-step {
+    flex: 1;
+    min-width: 160px;
+    max-width: 200px;
+  }
+  .how-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin: 0 auto 12px;
+  }
+  .how-icon.yellow { background: var(--yellow); }
+  .how-icon.green { background: #4caf8a; }
+  .how-icon.pink { background: #f472b6; }
+  .how-step h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .how-step p { font-size: 12px; color: rgba(255,255,255,0.65); line-height: 1.4; }
+
+  /* ===== FILTERS ===== */
+  .catalog-header {
+    text-align: center;
+    padding: 0 20px 20px;
+  }
+  .catalog-header p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 16px;
+  }
+  .filters {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.1);
+    color: white;
+  }
+  .filter-btn.active {
+    background: var(--yellow);
+    color: #1a1a1a;
+  }
+  .filter-btn:hover:not(.active) { background: rgba(255,255,255,0.18); }
+
+  /* ===== ANIMAL GRID ===== */
+  .animals-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px 40px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  @media(max-width: 700px) { .animals-grid { grid-template-columns: repeat(2, 1fr); padding: 16px; } }
+
+  .animal-card {
+    cursor: pointer;
+    transition: transform 0.25s;
+    position: relative;
+  }
+  .animal-card:hover { transform: translateY(-6px) rotate(1deg); }
+
+  .envelope-wrap {
+    position: relative;
+    width: 100%;
+    padding-bottom: 115%;
+  }
+  .envelope-body {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 10px;
+    overflow: hidden;
+  }
+  .envelope-body.red { background: linear-gradient(160deg, #e84040 60%, #c73232); }
+  .envelope-body.yellow-e { background: linear-gradient(160deg, #f5c518 60%, #d4a90e); }
+  .envelope-body.teal { background: linear-gradient(160deg, #3dbfb8 60%, #2a9e97); }
+  .envelope-body.blue { background: linear-gradient(160deg, #6db8e8 60%, #4a9fd0); }
+
+  .envelope-flap {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 45%;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    opacity: 0.85;
+  }
+  .envelope-body.red .envelope-flap { background: #c73232; }
+  .envelope-body.yellow-e .envelope-flap { background: #d4a90e; }
+  .envelope-body.teal .envelope-flap { background: #2a9e97; }
+  .envelope-body.blue .envelope-flap { background: #4a9fd0; }
+
+  .animal-photo {
+    position: absolute;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    object-fit: cover;
+    z-index: 2;
+    border: 3px solid rgba(255,255,255,0.6);
+  }
+
+  .envelope-deco {
+    font-size: 22px;
+    position: absolute;
+    z-index: 1;
+  }
+  .deco-bl { bottom: 8px; left: 10px; }
+  .deco-br { bottom: 16px; right: 12px; opacity: 0.7; }
+
+  .animal-name-tag {
+    text-align: center;
+    margin-top: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+  }
+
+  /* ===== ANIMAL PAGE ===== */
+  #page-animal { padding: 0 20px 120px; }
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: white; }
+
+  .animal-hero {
+    text-align: center;
+    padding: 20px 20px 0;
+  }
+  .animal-avatar-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  .animal-avatar {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--blue-light);
+    box-shadow: 0 0 0 6px rgba(168,212,240,0.25), 0 0 40px rgba(168,212,240,0.3);
+  }
+  .letter-badge {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .animal-page-name {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(20px, 4vw, 32px);
+    font-weight: 800;
+    color: var(--yellow);
+    margin-bottom: 6px;
+  }
+  .animal-meta {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 28px;
+  }
+
+  .animal-story {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 20px 24px;
+    max-width: 600px;
+    margin: 0 auto 32px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.9);
+  }
+
+  /* Letter card */
+  .letter-card {
+    background: #fdf8ed;
+    border-radius: 20px;
+    max-width: 600px;
+    margin: 0 auto 32px;
+    padding: 32px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .letter-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 16px;
+    background: radial-gradient(circle at 16px 0, transparent 12px, #fdf8ed 12px) repeat-x;
+    background-size: 32px 16px;
+  }
+  .letter-header {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--yellow-dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .stamp {
+    width: 48px; height: 48px;
+    background: rgba(245,197,24,0.15);
+    border: 2px dashed rgba(245,197,24,0.5);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+  .letter-text {
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    color: #2d2d2d;
+    line-height: 2;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding-bottom: 16px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .letter-line {
+    display: block;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding: 2px 0;
+  }
+  .letter-signature {
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    color: #2d2d2d;
+    margin-top: 4px;
+  }
+  .letter-heart { color: #e84040; font-size: 18px; margin-top: 8px; }
+
+  .letter-envelope-deco {
+    position: absolute;
+    bottom: -10px; right: -10px;
+    width: 80px; height: 64px;
+    background: var(--red);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    opacity: 0.9;
+    transform: rotate(10deg);
+  }
+
+  /* CTA buttons */
+  .cta-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 600px;
+    margin: 0 auto 28px;
+    padding: 0 4px;
+  }
+  .cta-gift {
+    background: var(--yellow);
+    color: #1a1a1a;
+    border: none;
+    border-radius: 16px;
+    padding: 20px 16px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(245,197,24,0.4);
+  }
+  .cta-gift:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(245,197,24,0.5); }
+  .cta-rod {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+    border-radius: 16px;
+    padding: 20px 16px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .cta-rod:hover { background: rgba(255,255,255,0.13); transform: translateY(-3px); }
+  .cta-icon { font-size: 22px; margin-bottom: 8px; }
+  .cta-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .cta-desc { font-size: 12px; opacity: 0.75; line-height: 1.4; }
+
+  .animal-footer-note {
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-overlay.active { display: flex; }
+
+  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px) } to { opacity: 1; transform: translateY(0) } }
+
+  .modal {
+    background: #e8f4ff;
+    border-radius: 24px;
+    padding: 32px 28px 28px;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+    padding-top: 16px;
+  }
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 16px;
+    background: radial-gradient(circle at 16px 16px, transparent 12px, #e8f4ff 12px) repeat-x;
+    background-size: 32px 16px;
+    background-position: 0 0;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: rgba(0,0,0,0.1);
+    border: none;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(0,0,0,0.2); }
+
+  .modal-animal-img {
+    display: block;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 16px;
+    border: 3px solid var(--yellow);
+    box-shadow: 0 0 0 4px rgba(245,197,24,0.2);
+  }
+  .modal-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a1a;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .modal-subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  /* Tabs */
+  .modal-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 20px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 50px;
+    padding: 4px;
+  }
+  .modal-tab {
+    padding: 10px;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .modal-tab.active {
+    background: var(--yellow);
+    color: #1a1a1a;
+    box-shadow: 0 2px 8px rgba(245,197,24,0.4);
+  }
+
+  /* Amount */
+  .amount-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  .amount-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .amount-btn {
+    padding: 12px;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    background: white;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .amount-btn.active {
+    border-color: var(--yellow-dark);
+    background: rgba(245,197,24,0.08);
+    color: #1a1a1a;
+  }
+  .amount-btn:hover:not(.active) { border-color: rgba(0,0,0,0.25); }
+  .amount-other {
+    grid-column: 1/-1;
+    background: white;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    padding: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .amount-other:hover { border-color: rgba(0,0,0,0.25); }
+
+  .custom-amount-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    margin: 12px 0 6px;
+  }
+  .custom-amount-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    color: #333;
+    background: white;
+    outline: none;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .custom-amount-input:focus { border-color: var(--yellow-dark); }
+  .custom-amount-input::placeholder { color: rgba(0,0,0,0.3); }
+
+  .donation-info {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  .donate-submit {
+    width: 100%;
+    background: var(--yellow);
+    color: #1a1a1a;
+    border: none;
+    border-radius: 50px;
+    padding: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(245,197,24,0.4);
+    margin-bottom: 12px;
+  }
+  .donate-submit:hover { background: var(--yellow-dark); transform: translateY(-2px); }
+
+  .modal-footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  /* Share tab content */
+  .share-content { text-align: center; padding: 16px 0; }
+  .share-content p { font-size: 14px; color: #444; margin-bottom: 20px; line-height: 1.6; }
+  .share-buttons { display: flex; flex-direction: column; gap: 10px; }
+  .share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    background: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .share-btn:hover { background: #f0f7ff; border-color: rgba(0,0,0,0.2); }
+
+  /* ===== THANK YOU MODAL ===== */
+  .thanks-modal {
+    background: #fdf8ed;
+    max-width: 440px;
+    padding: 28px 28px 24px;
+    text-align: center;
+  }
+  .thanks-photo-wrap {
+    position: relative;
+    width: 140px; height: 140px;
+    margin: 0 auto 16px;
+  }
+  .thanks-wreath {
+    position: absolute;
+    inset: -14px;
+    font-size: 18px;
+    line-height: 1;
+    letter-spacing: -2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2;
+    /* Circular wreath via rotation trick */
+    animation: none;
+  }
+  .thanks-wreath-ring {
+    position: absolute;
+    inset: -18px;
+    border-radius: 50%;
+    border: 3px dashed rgba(245,197,24,0.5);
+    z-index: 1;
+  }
+  .thanks-modal-photo {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 0 0 3px var(--yellow);
+    position: relative;
+    z-index: 3;
+    display: block;
+    margin: 10px auto 0;
+  }
+  .thanks-small-label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 4px;
+  }
+  .thanks-modal-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .thanks-modal-desc {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 18px;
+    max-width: 340px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .thanks-share-block {
+    background: white;
+    border: 2px solid var(--yellow);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    position: relative;
+    text-align: center;
+  }
+  .thanks-share-icon {
+    width: 44px; height: 44px;
+    background: var(--yellow);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    margin: 0 auto 10px;
+  }
+  .thanks-share-text {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.5;
+  }
+  .thanks-share-star {
+    position: absolute;
+    top: -10px; right: 14px;
+    font-size: 20px;
+  }
+  .thanks-others-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+  }
+  .thanks-others-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .thanks-other-item {
+    cursor: pointer;
+  }
+  .thanks-other-item img {
+    width: 100%; aspect-ratio: 1;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #e0e8f0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    border: 2px solid rgba(0,0,0,0.06);
+  }
+  .thanks-other-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #333;
+    margin-top: 4px;
+  }
+  .thanks-browse-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #f472b6, #ec4899);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(236,72,153,0.35);
+  }
+  .thanks-browse-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(236,72,153,0.45); }
+  .thanks-home-btn {
+    width: 100%;
+    background: white;
+    color: #333;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    border-radius: 50px;
+    padding: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 14px;
+    transition: all 0.2s;
+  }
+  .thanks-home-btn:hover { background: #f5f5f5; }
+  .thanks-footer-note {
+    font-size: 12px;
+    color: #888;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+
+  /* Moon decoration */
+  .moon-deco {
+    position: absolute;
+    font-size: 48px;
+    opacity: 0.8;
+    animation: float 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-12px) rotate(5deg); }
+  }
+
+  /* Trees */
+  .trees-bottom {
+    position: fixed;
+    bottom: 0; left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    align-items: flex-end;
+  }
+  .tree { font-size: 64px; line-height: 1; opacity: 0.7; }
+  .tree-left { transform: scaleX(-1); }
+
+  /* Responsive */
+  @media(max-width: 500px) {
+    .cta-buttons { grid-template-columns: 1fr; }
+    .letter-card { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Stars background -->
+<div class="stars-bg" id="starsContainer"></div>
+
+<!-- Snow bottom -->
+<div class="snow-bottom">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+    <path d="M0,80 L0,40 Q120,10 240,35 Q360,60 480,30 Q600,0 720,25 Q840,50 960,20 Q1080,-10 1200,25 Q1320,60 1440,35 L1440,80 Z" fill="white" opacity="0.12"/>
+    <path d="M0,80 L0,55 Q180,30 360,50 Q540,70 720,45 Q900,20 1080,48 Q1260,75 1440,55 L1440,80 Z" fill="white" opacity="0.15"/>
+  </svg>
+</div>
+
+<!-- Trees decoration -->
+<div class="trees-bottom">
+  <div class="tree tree-left">🎄</div>
+  <div class="tree">🎄</div>
+</div>
+
+<!-- ===== PAGE: CATALOG ===== -->
+<div class="page active" id="page-catalog">
+  <!-- Moon -->
+  <div class="moon-deco" style="top:60px; left:24px;">🌙</div>
+
+  <nav>
+    <div class="logo">
+      <span class="logo-paw">🐾</span>
+      <span>Adopt Don't Stop</span>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h1>Стань Миколайчиком<br>для хвостиків</h1>
+    <p>Обери хвостика, прочитай його лист до Миколая і вирши — подарунок чи різочка?<br>Твій вибір — це реальна допомога притулку.</p>
+    <div class="btn-group">
+      <button class="btn-primary" onclick="scrollToCatalog()">🎁 Обрати тварину</button>
+      <button class="btn-secondary" onclick="toggleHow()">Як це працює?</button>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="how-box" id="howBox" style="max-width:700px; margin: 0 auto 40px;">
+    <h3>Як це працює?</h3>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-icon yellow">🤍</div>
+        <h4>1. Обери тварину</h4>
+        <p>Переглянь наших хвостиків і обери того, хто зачепив за серце</p>
+      </div>
+      <div class="how-step">
+        <div class="how-icon green">✉️</div>
+        <h4>2. Прочитай лист до Миколая</h4>
+        <p>Дізнайся історію улюбленця і його мрії</p>
+      </div>
+      <div class="how-step">
+        <div class="how-icon pink">🎁</div>
+        <h4>3. Подаруй подарунок або… різочку 🎄</h4>
+        <p>Допоможи донатом або поширенням — обидва варіанти важливі!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Catalog -->
+  <div class="catalog-header" id="catalogSection">
+    <p>60 наших хвостиків чекають на диво та шукають свого Миколая</p>
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter(this,'all')">Всі (60)</button>
+      <button class="filter-btn" onclick="setFilter(this,'old')">Старенькі (12)</button>
+      <button class="filter-btn" onclick="setFilter(this,'long')">Дуже довго в притулку (15)</button>
+      <button class="filter-btn" onclick="setFilter(this,'sick')">Хронічно хворі (10)</button>
+    </div>
+  </div>
+
+  <div class="animals-grid" id="animalsGrid"></div>
+</div>
+
+<!-- ===== PAGE: ANIMAL ===== -->
+<div class="page" id="page-animal">
+  <div class="moon-deco" style="top:30px; right:30px; font-size:36px;">⭐</div>
+  <nav>
+    <div class="logo">
+      <span class="logo-paw">🐾</span>
+      <span>Adopt Don't Stop</span>
+    </div>
+  </nav>
+  <button class="back-btn" onclick="showPage('catalog')">← Назад до каталогу</button>
+
+  <div class="animal-hero">
+    <div class="animal-avatar-wrap">
+      <img id="animalPagePhoto" src="" alt="" class="animal-avatar">
+    </div>
+    <div class="letter-badge">❤️ Лист до Святого Миколая</div>
+    <h1 class="animal-page-name" id="animalPageName"></h1>
+    <p class="animal-meta" id="animalPageMeta"></p>
+  </div>
+
+  <div class="animal-story" id="animalPageStory"></div>
+
+  <div class="letter-card">
+    <div class="letter-header">
+      <span id="letterHeader"></span>
+      <div class="stamp">🐾</div>
+    </div>
+    <div class="letter-text" id="letterText"></div>
+    <div class="letter-signature" id="letterSignature"></div>
+    <div class="letter-heart">❤️</div>
+    <div class="letter-envelope-deco">❄️</div>
+  </div>
+
+  <div class="cta-buttons">
+    <button class="cta-gift" onclick="openModal('donate')">
+      <div class="cta-icon">🎁</div>
+      <div class="cta-title">Покласти подарунок</div>
+      <div class="cta-desc">Всім хорошим діткам Миколайчик приносить гостинці!</div>
+    </button>
+    <button class="cta-rod" onclick="openModal('share')">
+      <div class="cta-icon">🌿</div>
+      <div class="cta-title">Покласти різочку</div>
+      <div class="cta-desc">Непослухам Миколай приносить різочку!</div>
+    </button>
+  </div>
+
+  <p class="animal-footer-note">🎄 Подарунок чи різочка — обираєш ти. Але кожен вибір робить добро видимим. 🎄</p>
+</div>
+
+<!-- ===== THANKS MODAL ===== -->
+<div class="modal-overlay" id="thanksOverlay">
+  <div class="modal thanks-modal">
+    <button class="modal-close" onclick="closeThanks()">✕</button>
+
+    <!-- Animal photo with wreath -->
+    <div class="thanks-photo-wrap">
+      <div class="thanks-wreath">🎁🍬🎄🍭🎀🌿🎁🍬🎄🍭🎀🌿</div>
+      <img id="thanksPhoto" src="" alt="" class="thanks-modal-photo">
+    </div>
+
+    <p class="thanks-small-label">Дякуємо!</p>
+    <h2 class="thanks-modal-title">Ти — Миколайчик для <span id="thanksName"></span></h2>
+    <p class="thanks-modal-desc">Десь у притулку зараз котик щасливо примружує очі — бо добро прийшло саме до нього. Твоя підтримка — це тепло, яке тварини пам'ятають завжди.</p>
+
+    <!-- Share block -->
+    <div class="thanks-share-block">
+      <div class="thanks-share-icon">🤍</div>
+      <p class="thanks-share-text">💛 Розкажи про це друзям у своїх сторіс — нехай більше людей дізнаються, як можна стати Миколаєм для хвостиків з притулку!</p>
+      <span class="thanks-share-star">⭐</span>
+    </div>
+
+    <!-- Other animals -->
+    <h3 class="thanks-others-title">Інші хвостики теж чекають на Миколая</h3>
+    <div class="thanks-others-grid" id="thanksOthers"></div>
+
+    <button class="thanks-browse-btn" onclick="closeThanks(); showPage('catalog')">Переглянути всіх тварин →</button>
+    <button class="thanks-home-btn" onclick="closeThanks(); showPage('catalog')">🏠 Повернутися на головну</button>
+
+    <p class="thanks-footer-note">🎄 Доброта працює найкраще, коли нею діляться.</p>
+  </div>
+</div>
+
+<!-- ===== DONATION MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <img id="modalAnimalImg" src="" alt="" class="modal-animal-img">
+    <h2 class="modal-title" id="modalAnimalName"></h2>
+    <p class="modal-subtitle">⭐ Обери, як хочеш допомогти</p>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabDonate" onclick="switchTab('donate')">🎁 Донат</button>
+      <button class="modal-tab" id="tabShare" onclick="switchTab('share')">🌿 Речі</button>
+    </div>
+
+    <!-- Donate content -->
+    <div id="donateContent">
+      <p class="amount-label">Обери суму</p>
+      <div class="amount-grid">
+        <button class="amount-btn" onclick="selectAmount(this, 100)">100 ₴</button>
+        <button class="amount-btn" onclick="selectAmount(this, 200)">200 ₴</button>
+        <button class="amount-btn active" onclick="selectAmount(this, 300)">300 ₴</button>
+        <button class="amount-btn" onclick="selectAmount(this, 500)">500 ₴</button>
+        <button class="amount-other" onclick="selectCustom()">Інша сума</button>
+      </div>
+      <p class="custom-amount-label">Введіть суму</p>
+      <input type="number" class="custom-amount-input" id="customAmountInput" placeholder="Введіть суму" value="300">
+      <p class="donation-info">💙 Ваш донат піде на корм та медичні потреби <span id="donationAnimalName"></span>.</p>
+      <button class="donate-submit" onclick="submitDonation()">🎁 Задонатити</button>
+      <p class="modal-footer-note">🎄 Дякуємо, що стаєш Миколаєм для <span id="donationAnimalName2"></span>.</p>
+    </div>
+
+    <!-- Share content -->
+    <div id="shareContent" style="display:none;">
+      <div class="share-content">
+        <p>Поширення — теж допомога! Розкажи друзям про <span id="shareAnimalName"></span> і допоможи знайти їй дім або донатора.</p>
+        <div class="share-buttons">
+          <button class="share-btn" onclick="shareAnimal('telegram')">📱 Поширити в Telegram</button>
+          <button class="share-btn" onclick="shareAnimal('facebook')">📘 Поширити у Facebook</button>
+          <button class="share-btn" onclick="copyLink()">🔗 Скопіювати посилання</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Фото підтягуються з animals-data.js
+// Шлях до фото формується автоматично з поля animal.folder
+
+function getPhoto(animal, size) {
+  // size: 'catalog' | 'profile' | 'thumb'
+  if (!animal.folder) return getFallbackEmoji(animal);
+  return `images/animals/${animal.folder}/${size}.jpg`;
+}
+
+function getFallbackEmoji(animal) {
+  const emoji = animal.type === 'cat' ? '🐱' : '🐶';
+  return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230d1b4b" rx="12"/><text y=".9em" font-size="60" x="20">${encodeURIComponent(emoji)}</text></svg>`;
+}
+
+function imgWithFallback(src, animal, alt) {
+  return `<img src="${src}" alt="${alt}" onerror="this.src='${getFallbackEmoji(animal)}'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">`;
+}
+
+let currentAnimal = null;
+let selectedAmount = 300;
+let activeFilter = 'all';
+
+// ===== INIT STARS =====
+function initStars() {
+  const container = document.getElementById('starsContainer');
+  const starData = [
+    { top: '8%', left: '15%', size: 10, type: 'gold', d: '2.5s', delay: '0s' },
+    { top: '12%', left: '55%', size: 8, type: 'blue', d: '3s', delay: '0.5s' },
+    { top: '5%', left: '80%', size: 12, type: 'gold', d: '2s', delay: '1s' },
+    { top: '20%', left: '35%', size: 6, type: 'white-s', d: '4s', delay: '0.2s' },
+    { top: '30%', left: '90%', size: 8, type: 'blue', d: '3.5s', delay: '1.5s' },
+    { top: '45%', left: '5%', size: 7, type: 'gold', d: '2.8s', delay: '0.8s' },
+    { top: '60%', left: '70%', size: 9, type: 'white-s', d: '3.2s', delay: '0.3s' },
+    { top: '15%', left: '95%', size: 11, type: 'gold', d: '2.2s', delay: '1.2s' },
+    { top: '75%', left: '20%', size: 6, type: 'blue', d: '4s', delay: '0.6s' },
+    { top: '40%', left: '50%', size: 5, type: 'white-s', d: '3.8s', delay: '0.9s' },
+  ];
+  starData.forEach(s => {
+    const el = document.createElement('div');
+    el.className = `star ${s.type}`;
+    el.style.cssText = `top:${s.top};left:${s.left};width:${s.size}px;height:${s.size}px;--d:${s.d};--delay:${s.delay};`;
+    container.appendChild(el);
+  });
+
+  // Hanging decorations
+  const hangData = [
+    { left: '10%', items: [{type:'circle', h:40},{type:'star',h:0}] },
+    { left: '25%', items: [{type:'circle', h:55},{type:'star',h:0}] },
+    { left: '75%', items: [{type:'circle', h:45},{type:'star',h:0}] },
+    { left: '90%', items: [{type:'circle', h:50},{type:'star',h:0}] },
+  ];
+  hangData.forEach(h => {
+    const wrap = document.createElement('div');
+    wrap.className = 'hanging';
+    wrap.style.left = h.left;
+    const line = document.createElement('div');
+    line.className = 'hanging-line';
+    line.style.height = h.items[0].h + 'px';
+    wrap.appendChild(line);
+    const deco = document.createElement('div');
+    deco.className = 'hanging-circle';
+    wrap.appendChild(deco);
+    container.appendChild(wrap);
+  });
+}
+
+// ===== RENDER ANIMALS =====
+function renderAnimals() {
+  const grid = document.getElementById('animalsGrid');
+  grid.innerHTML = '';
+  const filtered = activeFilter === 'all' ? animals : animals.filter(a => a.tags.includes(activeFilter));
+  filtered.forEach(animal => {
+    const card = document.createElement('div');
+    card.className = 'animal-card';
+    card.onclick = () => openAnimal(animal.id);
+
+    const colors = ['red','yellow-e','teal','blue'];
+    const decos = {
+      'red': ['❄️','❄️'],
+      'yellow-e': ['🎄','🎄'],
+      'teal': ['⭐','⭐'],
+      'blue': ['🌸','🌸']
+    };
+
+    const catalogSrc = getPhoto(animal, 'catalog');
+    card.innerHTML = `
+      <div class="envelope-wrap">
+        <div class="envelope-body ${animal.color}">
+          <div class="envelope-flap"></div>
+          <div style="width:75%;aspect-ratio:1;position:absolute;top:10%;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.2);border-radius:8px;z-index:2;overflow:hidden;border:3px solid rgba(255,255,255,0.5);">
+            <img src="${catalogSrc}" alt="${animal.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:100%;height:100%;object-fit:cover;display:block;">
+            <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:52px;">${animal.type === 'cat' ? '🐱' : '🐶'}</div>
+          </div>
+          <div class="envelope-deco deco-bl">${decos[animal.color][0]}</div>
+          <div class="envelope-deco deco-br">${decos[animal.color][1]}</div>
+        </div>
+      </div>
+      <div class="animal-name-tag">${animal.name}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ===== FILTER =====
+function setFilter(btn, filter) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = filter;
+  renderAnimals();
+}
+
+// ===== OPEN ANIMAL =====
+function openAnimal(id) {
+  const a = animals.find(x => x.id === id);
+  currentAnimal = a;
+
+  // Set animal page photo
+  document.getElementById('animalPagePhoto').src = getPhoto(a, 'profile');
+  document.getElementById('animalPagePhoto').onerror = function() { this.src = getFallbackEmoji(a); };
+  document.getElementById('animalPageName').textContent = a.name + ' – ' + (a.type === 'cat' ? 'киця' : 'пес') + ', що вистояла';
+  document.getElementById('animalPageMeta').textContent = a.age + ' • ' + a.trait;
+  document.getElementById('animalPageStory').textContent = a.story;
+  document.getElementById('letterHeader').textContent = a.letterHeader;
+
+  const letterDiv = document.getElementById('letterText');
+  letterDiv.innerHTML = a.letter.map(l => `<span class="letter-line">${l}</span>`).join('');
+
+  document.getElementById('letterSignature').textContent = a.signature;
+
+  showPage('animal');
+  window.scrollTo(0, 0);
+}
+
+// ===== MODAL =====
+function openModal(tab) {
+  if (!currentAnimal) return;
+  const a = currentAnimal;
+
+  document.getElementById('modalAnimalImg').src = getPhoto(a, 'thumb');
+  document.getElementById('modalAnimalImg').onerror = function() { this.src = getFallbackEmoji(a); };
+  document.getElementById('modalAnimalName').textContent = 'Подарунок для ' + a.name;
+  document.querySelectorAll('#donationAnimalName').forEach(el => el.textContent = a.name);
+  document.querySelectorAll('#donationAnimalName2').forEach(el => el.textContent = a.name);
+  document.getElementById('shareAnimalName').textContent = a.name;
+
+  document.getElementById('modalOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  switchTab(tab);
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function switchTab(tab) {
+  document.getElementById('tabDonate').classList.toggle('active', tab === 'donate');
+  document.getElementById('tabShare').classList.toggle('active', tab === 'share');
+  document.getElementById('donateContent').style.display = tab === 'donate' ? 'block' : 'none';
+  document.getElementById('shareContent').style.display = tab === 'share' ? 'block' : 'none';
+}
+
+function selectAmount(btn, amount) {
+  document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedAmount = amount;
+  document.getElementById('customAmountInput').value = amount;
+}
+
+function selectCustom() {
+  document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('customAmountInput').focus();
+}
+
+function submitDonation() {
+  closeModal();
+  const a = currentAnimal;
+
+  const thanksImg = document.getElementById('thanksPhoto');
+  thanksImg.src = getPhoto(a, 'thumb');
+  thanksImg.onerror = function() { this.src = getFallbackEmoji(a); };
+  document.getElementById('thanksName').textContent = a.name;
+
+  // Show 3 other animals
+  const others = animals.filter(x => x.id !== a.id).slice(0, 3);
+  const grid = document.getElementById('thanksOthers');
+  grid.innerHTML = others.map(o => {
+    const src = getPhoto(o, 'thumb');
+    const fallback = getFallbackEmoji(o);
+    return `<div class="thanks-other-item" onclick="closeThanks(); openAnimal(${o.id})">
+      <img src="${src}" alt="${o.name}" onerror="this.src='${fallback}'" style="width:100%;aspect-ratio:1;border-radius:12px;object-fit:cover;border:2px solid rgba(0,0,0,0.06);">
+      <div class="thanks-other-name">${o.name}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('thanksOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeThanks() {
+  document.getElementById('thanksOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function shareAnimal(platform) {
+  const text = `Познайомся з ${currentAnimal.name} — ${currentAnimal.type === 'cat' ? 'кицею' : 'псом'} з притулку! ${currentAnimal.story}`;
+  if (platform === 'telegram') {
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`);
+  } else if (platform === 'facebook') {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`);
+  }
+  closeModal();
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    alert('Посилання скопійовано!');
+    closeModal();
+  });
+}
+
+// ===== NAVIGATION =====
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+}
+
+function scrollToCatalog() {
+  document.getElementById('catalogSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function toggleHow() {
+  const box = document.getElementById('howBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'block';
+  box.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Close modal on overlay click
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById('thanksOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeThanks();
+});
+
+// ===== INIT =====
+initStars();
+renderAnimals();
+</script>
+</body>
+</html>
