@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adopt Don't Stop — Стань Миколайчиком для хвостиків</title>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="nicolas/animals-data.js"></script>
+<script src="animals-data.js"></script>
 <style>
   :root {
     --navy: #0d1b4b;
@@ -1166,7 +1166,7 @@
 function getPhoto(animal, size) {
   // size: 'catalog' | 'profile' | 'thumb'
   if (!animal.folder) return getFallbackEmoji(animal);
-  return `nicolas/images/animals/${animal.folder}/${size}.jpg`;
+  return `images/animals/${animal.folder}/${size}.jpg`;
 }
 
 function getFallbackEmoji(animal) {
