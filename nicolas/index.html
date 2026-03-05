@@ -1166,7 +1166,7 @@
 function getPhoto(animal, size) {
   // size: 'catalog' | 'profile' | 'thumb'
   if (!animal.folder) return getFallbackEmoji(animal);
-  return `images/animals/${animal.folder}/${size}.jpg`;
+  return `images/animals/${animal.folder}/${size}.png`;
 }
 
 function getFallbackEmoji(animal) {
